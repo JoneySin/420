@@ -1,0 +1,6 @@
+
+# Local dev / demo
+.venv/
+__pycache__/
+*.pyc
+image-search/

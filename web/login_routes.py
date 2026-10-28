@@ -10,8 +10,16 @@ login_routes = web.RouteTableDef()
 
 @login_routes.get('/login')
 async def login_user(req):
-    content = '<form action="/api/login" method="post"><input type="email" name="email" placeholder="Email Address" required><input type="password" name="password" placeholder="Password" required><button class="submit-btn" type="submit">Sign In</button></form><div style="margin-top:20px; display:flex; justify-content:space-between; font-size:14px;"><a href="/forgot_password" style="color:var(--muted); text-decoration:none;">Forgot Password?</a><a href="/register" style="color:var(--text); text-decoration:none; font-weight:700;">New? Join Now</a></div>'
-    return build_page("Sign In", form_wrapper("Sign In", content, req.query.get('err',''), req.query.get('msg','')), "login-bg")
+    content = (
+        '<form action="/api/login" method="post">'
+        '<label class="field-label">Email address</label><input type="email" name="email" placeholder="you@example.com" required autocomplete="email">'
+        '<label class="field-label">Password</label><input type="password" name="password" placeholder="Enter your password" required autocomplete="current-password">'
+        '<button class="submit-btn" type="submit">Sign in to Fast Finder</button></form>'
+        '<div class="login-foot"><a href="/forgot_password">Forgot password?</a>'
+        '<a href="/register" class="strong">Create an account &rarr;</a></div>'
+    )
+    return build_page("Sign In", form_wrapper("Welcome back", content, req.query.get('err',''), req.query.get('msg',''),
+                        "Sign in to search, stream and manage your media library."), "login-bg")
 
 @login_routes.post('/api/login')
 async def api_login_user(req):
@@ -34,8 +42,17 @@ async def api_login_user(req):
 
 @login_routes.get('/register')
 async def register_user(req):
-    content = '<form action="/api/register_step1" method="post"><input type="number" name="tg_id" placeholder="Telegram ID (e.g. 123456)" required><input type="email" name="email" placeholder="Email Address" required><input type="password" name="password" placeholder="Create Password" required><button class="submit-btn" type="submit">Send OTP via Telegram</button></form><p style="margin-top:15px; font-size:14px; color:var(--muted)">Already have an account? <a href="/login" style="color:var(--text); text-decoration:none; font-weight:700;">Sign In</a></p>'
-    return build_page("Create Account", form_wrapper("Create Account", content, req.query.get('err','')), "login-bg")
+    content = (
+        '<form action="/api/register_step1" method="post">'
+        '<label class="field-label">Telegram ID</label><input type="number" name="tg_id" placeholder="e.g. 123456789" required inputmode="numeric">'
+        '<label class="field-label">Email address</label><input type="email" name="email" placeholder="you@example.com" required autocomplete="email">'
+        '<label class="field-label">Password</label><input type="password" name="password" placeholder="Create a strong password" required autocomplete="new-password">'
+        '<button class="submit-btn" type="submit">Send OTP via Telegram</button></form>'
+        '<p class="login-foot" style="justify-content:center;color:var(--muted);">Already have an account? '
+        '<a href="/login" class="strong">Sign in</a></p>'
+    )
+    return build_page("Create Account", form_wrapper("Create your account", content, req.query.get('err',''), "",
+                        "Link your Telegram ID once and unlock a private web dashboard."), "login-bg")
 
 @login_routes.post('/api/register_step1')
 async def api_register_step1(req):
@@ -61,8 +78,15 @@ async def api_register_step1(req):
 async def verify_registration_page(req):
     tg_id = req.query.get('tg_id', '')
     if not tg_id: return web.HTTPFound('/register')
-    content = f'<p style="color:var(--muted); margin-bottom:15px; font-size:14px;">We sent a 6-digit OTP to your Telegram bot PM.</p><form action="/api/register_step2" method="post"><input type="hidden" name="tg_id" value="{tg_id}"><input type="text" name="otp" placeholder="Enter 6-digit OTP" required><button class="submit-btn" type="submit">Verify & Create Account</button></form>'
-    return build_page("Verify Registration", form_wrapper("Verify OTP", content, req.query.get('err','')), "login-bg")
+    content = (
+        '<form action="/api/register_step2" method="post">'
+        f'<input type="hidden" name="tg_id" value="{tg_id}">'
+        '<label class="field-label">One-time password</label><input type="text" name="otp" placeholder="------" required inputmode="numeric" maxlength="6" '
+        'style="letter-spacing:.5em;font-size:19px;text-align:center;font-weight:700;">'
+        '<button class="submit-btn" type="submit">Verify &amp; create account</button></form>'
+    )
+    return build_page("Verify Registration", form_wrapper("Verify your OTP", content, req.query.get('err',''), "",
+                        "Open Telegram, find our bot and copy the 6-digit code."), "login-bg")
 
 @login_routes.post('/api/register_step2')
 async def api_register_step2(req):
@@ -84,8 +108,19 @@ async def api_register_step2(req):
 
 @login_routes.get('/forgot_password')
 async def forgot_password(req):
-    content = '<p style="color:var(--muted); margin-bottom:15px; font-size:14px;">Enter your Telegram ID to receive an OTP.</p><form action="/api/forgot_password" method="post"><input type="number" name="tg_id" placeholder="Telegram ID" required><button class="submit-btn" type="submit">Send OTP to Telegram</button></form><hr style="border:0; border-top:1px solid var(--border); margin:25px 0;"><form action="/api/reset_password" method="post"><input type="number" name="tg_id" placeholder="Confirm TG ID" required><input type="text" name="otp" placeholder="Enter OTP" required><input type="password" name="new_password" placeholder="New Password" required><button class="submit-btn" style="background:var(--text);color:var(--card);" type="submit">Update Password</button></form>'
-    return build_page("Reset Password", form_wrapper("Reset Password", content, req.query.get('err',''), req.query.get('msg','')), "login-bg")
+    content = (
+        '<form action="/api/forgot_password" method="post">'
+        '<label class="field-label">Telegram ID</label><input type="number" name="tg_id" placeholder="e.g. 123456789" required inputmode="numeric">'
+        '<button class="submit-btn" type="submit">Send OTP to Telegram</button></form>'
+        '<hr style="border:0;border-top:1px solid var(--border);margin:24px 0;">'
+        '<form action="/api/reset_password" method="post">'
+        '<label class="field-label">Confirm Telegram ID</label><input type="number" name="tg_id" placeholder="e.g. 123456789" required inputmode="numeric">'
+        '<label class="field-label">OTP from Telegram</label><input type="text" name="otp" placeholder="Enter 6-digit OTP" required inputmode="numeric">'
+        '<label class="field-label">New password</label><input type="password" name="new_password" placeholder="Choose a new password" required autocomplete="new-password">'
+        '<button class="submit-btn" type="submit">Update password</button></form>'
+    )
+    return build_page("Reset Password", form_wrapper("Reset your password", content, req.query.get('err',''), req.query.get('msg',''),
+                        "Every reset is verified through your linked Telegram account."), "login-bg")
 
 @login_routes.post('/api/forgot_password')
 async def api_forgot_password(req):

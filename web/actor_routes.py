@@ -201,7 +201,14 @@ async def actors_directory_page(req):
     </script>
     '''
 
-    page_body = f'''<div class="main" style="padding-top:20px; max-width:1100px; margin:0 auto; padding-left:20px; padding-right:20px;">{search_ui}{initial_grid}{js_logic}</div>'''
+    page_head = (
+        '<div class="page-head"><div>'
+        '<div class="page-eyebrow">People &amp; sources</div>'
+        '<h1 class="page-title">Directory</h1>'
+        '<p class="page-sub">Actors, apps and websites linked to your media library.</p>'
+        '</div></div>'
+    )
+    page_body = f'''<div class="main" style="max-width:1100px; margin:0 auto;">{page_head}{search_ui}{initial_grid}{js_logic}</div>'''
     return build_page("Directory Catalog - Fast Finder", page_body, "", "actors", role)
 
 # ─────────────────────────────────────────────────────────

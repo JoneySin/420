@@ -620,7 +620,14 @@ async def posts_directory_page(req):
     document.getElementById('post_q').addEventListener('keydown', function(e) {{ if(e.key === 'Enter') {{ resetPost(); searchPosts(); }} }});
     </script>'''
 
-    return build_page("Posts Catalog", f'<div class="main" style="padding-top:20px; max-width:1100px; margin:0 auto; padding-left:20px; padding-right:20px;">{search_ui}{initial_grid}{js_logic}</div>', "", "posts", role)
+    page_head = (
+        '<div class="page-head"><div>'
+        '<div class="page-eyebrow">Curated catalog</div>'
+        '<h1 class="page-title">Posts</h1>'
+        '<p class="page-sub">Hand-picked releases with posters, tags and trailers.</p>'
+        '</div></div>'
+    )
+    return build_page("Posts Catalog", f'<div class="main" style="max-width:1100px; margin:0 auto;">{page_head}{search_ui}{initial_grid}{js_logic}</div>', "", "posts", role)
 
 @post_routes.get('/api/posts/search')
 async def api_posts_search(req):
